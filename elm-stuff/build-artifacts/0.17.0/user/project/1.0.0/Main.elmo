@@ -1,0 +1,399 @@
+var _user$project$Main$loseScreen = _elm_lang$html$Html$text('You Lost!');
+var _user$project$Main$winScreen = _elm_lang$html$Html$text('You Win!');
+var _user$project$Main$blood = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('55,32 55,35'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(255,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[])),
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('65,32 65,35'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(255,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$rightEye = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$circle,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$cx('65'),
+					_elm_lang$svg$Svg_Attributes$cy('30'),
+					_elm_lang$svg$Svg_Attributes$r('2'),
+					_elm_lang$svg$Svg_Attributes$stroke('black'),
+					_elm_lang$svg$Svg_Attributes$strokeWidth('1'),
+					_elm_lang$svg$Svg_Attributes$fill('#fff')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$leftEye = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$circle,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$cx('55'),
+					_elm_lang$svg$Svg_Attributes$cy('30'),
+					_elm_lang$svg$Svg_Attributes$r('2'),
+					_elm_lang$svg$Svg_Attributes$stroke('black'),
+					_elm_lang$svg$Svg_Attributes$strokeWidth('1'),
+					_elm_lang$svg$Svg_Attributes$fill('#fff')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$rightArm = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('60,45 70,65'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(0,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$leftArm = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('60,45 50,65'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(0,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$rightLeg = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('60,65 70,85'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(0,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$leftLeg = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('60,65 50,85'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(0,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$torso = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('60,40 60,65'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(0,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$head = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$circle,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$cx('60'),
+					_elm_lang$svg$Svg_Attributes$cy('30'),
+					_elm_lang$svg$Svg_Attributes$r('10'),
+					_elm_lang$svg$Svg_Attributes$stroke('black'),
+					_elm_lang$svg$Svg_Attributes$strokeWidth('1'),
+					_elm_lang$svg$Svg_Attributes$fill('#faefca')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$stand = A2(
+	_elm_lang$svg$Svg$g,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$polyline,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$points('30,90 10,90 20,90 20,10 60,10 60,20'),
+					_elm_lang$svg$Svg_Attributes$style('fill:none;stroke:rgb(0,0,0);stroke-width:2')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$Main$hangmanScreen = function (model) {
+	return A2(
+		_elm_lang$svg$Svg$svg,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$svg$Svg_Attributes$width('200'),
+				_elm_lang$svg$Svg_Attributes$height('200'),
+				_elm_lang$svg$Svg_Attributes$viewBox('0 0 100 100')
+			]),
+		A2(_elm_lang$core$List$take, 10 - model.chances, model.hangman));
+};
+var _user$project$Main$viewArray = function (array) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		_elm_lang$core$Array$toList(array));
+};
+var _user$project$Main$buttonStyle = _elm_lang$html$Html_Attributes$style(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
+			{ctor: '_Tuple2', _0: 'margin-top', _1: '2px'}
+		]));
+var _user$project$Main$inputStyle = _elm_lang$html$Html_Attributes$style(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
+			{ctor: '_Tuple2', _0: 'width', _1: '100%'}
+		]));
+var _user$project$Main$headStyle = _elm_lang$html$Html_Attributes$style(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'width', _1: '140px'},
+			{ctor: '_Tuple2', _0: 'height', _1: '50px'},
+			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
+			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'},
+			{ctor: '_Tuple2', _0: 'padding-top', _1: '20px'}
+		]));
+var _user$project$Main$myStyle = _elm_lang$html$Html_Attributes$style(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'text-align', _1: 'left'},
+			{ctor: '_Tuple2', _0: 'height', _1: '200px'},
+			{ctor: '_Tuple2', _0: 'width', _1: '200px'},
+			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
+			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'}
+		]));
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$compare = F3(
+	function (input, currentChar, $char) {
+		return (_elm_lang$core$Native_Utils.eq(
+			_elm_lang$core$String$toUpper($char),
+			input) || _elm_lang$core$Native_Utils.eq(currentChar, $char)) ? $char : '_';
+	});
+var _user$project$Main$under = function (n) {
+	return '_';
+};
+var _user$project$Main$answerString = 'Alphabet';
+var _user$project$Main$answer = _elm_lang$core$Array$fromList(
+	A2(_elm_lang$core$String$split, '', _user$project$Main$answerString));
+var _user$project$Main$length$ = _elm_lang$core$Array$length(_user$project$Main$answer);
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {input: a, chances: b, answer: c, current: d, oldCurrent: e, status: f, hangman: g};
+	});
+var _user$project$Main$Ongoing = {ctor: 'Ongoing'};
+var _user$project$Main$init = function () {
+	var current = A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_');
+	return {
+		ctor: '_Tuple2',
+		_0: A7(
+			_user$project$Main$Model,
+			'',
+			9,
+			_user$project$Main$answer,
+			current,
+			current,
+			_user$project$Main$Ongoing,
+			_elm_lang$core$Native_List.fromArray(
+				[_user$project$Main$stand, _user$project$Main$head, _user$project$Main$torso, _user$project$Main$leftArm, _user$project$Main$rightArm, _user$project$Main$leftLeg, _user$project$Main$rightLeg, _user$project$Main$leftEye, _user$project$Main$rightEye, _user$project$Main$blood])),
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+}();
+var _user$project$Main$Loss = {ctor: 'Loss'};
+var _user$project$Main$Win = {ctor: 'Win'};
+var _user$project$Main$checkFunction = function (model) {
+	var current = _elm_lang$core$Array$fromList(
+		A3(
+			_elm_lang$core$List$map2,
+			_user$project$Main$compare(model.input),
+			_elm_lang$core$Array$toList(model.current),
+			_elm_lang$core$Array$toList(model.answer)));
+	var chances = _elm_lang$core$Native_Utils.eq(current, model.current) ? (model.chances - 1) : model.chances;
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			input: '',
+			chances: chances,
+			current: current,
+			oldCurrent: model.current,
+			status: _elm_lang$core$Native_Utils.eq(chances, 0) ? _user$project$Main$Loss : (_elm_lang$core$Native_Utils.eq(model.answer, current) ? _user$project$Main$Win : model.status)
+		});
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NewContent':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							input: _elm_lang$core$String$toUpper(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Check':
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Main$checkFunction(model),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return _user$project$Main$init;
+		}
+	});
+var _user$project$Main$Reset = {ctor: 'Reset'};
+var _user$project$Main$Check = {ctor: 'Check'};
+var _user$project$Main$NewContent = function (a) {
+	return {ctor: 'NewContent', _0: a};
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$body,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$headStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$inputStyle,
+								_elm_lang$html$Html_Attributes$placeholder('Make your guess!'),
+								_elm_lang$html$Html_Events$onInput(_user$project$Main$NewContent),
+								_elm_lang$html$Html_Attributes$maxlength(1),
+								_elm_lang$html$Html_Attributes$value(model.input)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$html$Html$br,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$buttonStyle,
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$Check),
+								_elm_lang$html$Html_Attributes$hidden(
+								!_elm_lang$core$Native_Utils.eq(model.status, _user$project$Main$Ongoing))
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Submit')
+							])),
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$buttonStyle,
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$Reset),
+								_elm_lang$html$Html_Attributes$hidden(
+								_elm_lang$core$Native_Utils.eq(model.status, _user$project$Main$Ongoing))
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Reset')
+							]))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_user$project$Main$hangmanScreen(model)
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$myStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						_user$project$Main$viewArray(model.current))
+					]))
+			]));
+};
+var _user$project$Main$main = {
+	main: _elm_lang$html$Html_App$program(
+		{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})
+};
