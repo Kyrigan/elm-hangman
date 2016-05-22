@@ -9001,7 +9001,6 @@ var _user$project$Main$initModel = function () {
 		_elm_lang$core$Native_List.fromArray(
 			[]))('')(0);
 }();
-var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$Loss = {ctor: 'Loss'};
 var _user$project$Main$Win = {ctor: 'Win'};
 var _user$project$Main$checkFunction = function (model) {
@@ -9060,6 +9059,7 @@ var _user$project$Main$getRandomWord = function () {
 		_user$project$Main$FetchSucceed,
 		_evancz$elm_http$Http$getString(url));
 }();
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _user$project$Main$getRandomWord};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
