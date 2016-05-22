@@ -49,7 +49,7 @@ type alias Model =
 
 
 init : (Model, Cmd Msg)
-init = (initModel, Cmd.none)
+init = (initModel, getRandomWord)
 
 initModel = let current = Array.repeat length' "_"
             in  Model "" 9 answer current current Ongoing
