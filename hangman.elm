@@ -10,6 +10,8 @@ import Json.Decode as Json
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Attributes as SvgA
+import Http
+import Task
 
 main =
   Html.program
@@ -25,7 +27,7 @@ answerString = "Alphabet"
 
 answer = Array.fromList (String.split "" answerString)
 
-length' = Array.length answer
+length' = 8
 
 -- MODEL
 
@@ -39,23 +41,28 @@ type alias Model =
     current : Array String, -- Shows what you have figured out so far.
     oldCurrent : Array String, -- Keeps track of your previous to determine mistakes.
     status : Status,
-    hangman : List (Svg Msg)
+    hangman : List (Svg Msg),
+    misses : List String,
+    message : String,
+    score : Int
   }
 
 
 init : (Model, Cmd Msg)
-init = let current = Array.repeat length' "_"
-       in ( Model "" 9 answer current current Ongoing
+init = (initModel, Cmd.none)
+
+initModel = let current = Array.repeat length' "_"
+            in  Model "" 9 answer current current Ongoing
                        [stand, head , torso, leftArm, rightArm, leftLeg, rightLeg, leftEye, rightEye, blood]
-          , Cmd.none)
+                       [] "" 0
 
 
-under n = "_"
 
 -- UPDATE
 
 type Msg
-  = NewContent String | Check | Reset
+  = NewContent String | Check | Reset | FetchSucceed String
+  | FetchFail Http.Error
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -65,8 +72,27 @@ update msg model =
                                    }
                             , Cmd.none)
     Check -> (checkFunction model, Cmd.none)
-    Reset -> init
-    
+    Reset -> ({initModel | score = model.score -- Keeping old score
+            }, getRandomWord)
+    FetchSucceed newWord ->
+      ({model |
+            answer = Array.fromList (String.split "" newWord),
+            current = Array.repeat length' "_",
+            oldCurrent = Array.repeat length' "_"
+            }, Cmd.none)
+
+    FetchFail _ ->
+      (model, Cmd.none)
+
+getRandomWord : Cmd Msg
+getRandomWord =
+  let
+    url =
+      "http://randomword.setgetgo.com/get.php?len=8"
+  in
+    Task.perform FetchFail FetchSucceed (Http.getString url)
+
+
 checkFunction model = -- Searches for the character in the answer.
   let current = Array.fromList (
                   List.map2 (compare model.input) 
@@ -75,14 +101,33 @@ checkFunction model = -- Searches for the character in the answer.
                   )
       chances = if current == model.current then model.chances - 1
                                             else model.chances 
-  in { model | input = "", -- Empties input box for convenience.
+      misses = if current == model.current then model.misses ++ [model.input]
+                                            else model.misses
+  in case (error model) of
+      3 -> {model | message = "You've already made that mistake!"}
+      2 -> {model | message = "You've already got that one right!"}
+      1 -> {model | message = "You didn't type anything!"}
+      _ -> {model | input = "", -- Empties input box for convenience.
                chances = chances ,
                current = current , 
                oldCurrent = model.current,
                status = if chances == 0 then Loss else
                         if model.answer == current then Win else
-                        model.status
-                    }
+                        model.status,
+               misses = misses,
+               message = ""
+                    } |> checkVictory
+                    
+checkVictory model = case model.status of
+                      Win -> {model | message = "Congratulations!", score = model.score + 1}
+                      Loss -> {model | message = "Sorry, the word was: " ++ readArray model.answer}
+                      Ongoing -> model
+                    
+error model = -- Returns error number based on specific error.
+  if model.input == "" then 1 -- Blank error.
+  else if List.member model.input (List.map String.toUpper (Array.toList model.current)) then 2 -- In answer.
+  else if List.member model.input model.misses then 3 -- In misses.
+  else 0 -- No error.
   
 compare input currentChar char = 
   if String.toUpper char == input || currentChar == char
@@ -103,6 +148,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model = 
   body [] [
+  div [scoreStyle] [Html.text ("Score: " ++ toString model.score)] ,
   div [headStyle ]
     [ input [inputStyle, placeholder "Make your guess!", onInput NewContent , maxlength 1, value model.input] []
     , br[] []
@@ -118,15 +164,30 @@ view model =
   div [] [hangmanScreen model] ,
   div [myStyle]
     [ 
-      Html.text (viewArray model.current) ] 
+      Html.text (readArray model.current) ] ,
+  div [myStyle]
+    [
+      Html.text ("Misses: " ++ (String.join " " model.misses)) ] ,
+    div [myStyle]
+    [
+      Html.text model.message ] 
     ]
     
 myStyle : Html.Attribute msg
 myStyle =
   HtmlA.style
     [ ("text-align", "left")
-    , ("height", "200px")
+    , ("padding-bottom", "30px")
     , ("width", "200px")
+    , ("font-family", "Courier New")
+    , ("padding-left", "20px")
+    ]
+    
+scoreStyle : Html.Attribute msg
+scoreStyle =
+  HtmlA.style
+    [ ("text-align", "left")
+    , ("padding-top", "5px")
     , ("font-family", "Courier New")
     , ("padding-left", "20px")
     ]
@@ -138,7 +199,7 @@ headStyle =
     , ("height", "50px")
     , ("font-family", "Courier New")
     , ("padding-left", "20px")
-    , ("padding-top", "20px")
+    , ("padding-top", "5px")
     ]
     
 inputStyle : Html.Attribute msg
@@ -156,7 +217,7 @@ buttonStyle =
     , ("margin-top", "2px")
     ]
  
-viewArray array = -- Converts array to string.
+readArray array = -- Converts array to string.
   String.join " " (Array.toList array)
 
 hangmanScreen model = Svg.svg

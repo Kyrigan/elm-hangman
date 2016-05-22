@@ -192,7 +192,7 @@ var _user$project$Main$hangmanScreen = function (model) {
 			]),
 		A2(_elm_lang$core$List$take, 10 - model.chances, model.hangman));
 };
-var _user$project$Main$viewArray = function (array) {
+var _user$project$Main$readArray = function (array) {
 	return A2(
 		_elm_lang$core$String$join,
 		' ',
@@ -218,13 +218,21 @@ var _user$project$Main$headStyle = _elm_lang$html$Html_Attributes$style(
 			{ctor: '_Tuple2', _0: 'height', _1: '50px'},
 			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
 			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'},
-			{ctor: '_Tuple2', _0: 'padding-top', _1: '20px'}
+			{ctor: '_Tuple2', _0: 'padding-top', _1: '5px'}
+		]));
+var _user$project$Main$scoreStyle = _elm_lang$html$Html_Attributes$style(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'text-align', _1: 'left'},
+			{ctor: '_Tuple2', _0: 'padding-top', _1: '5px'},
+			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
+			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'}
 		]));
 var _user$project$Main$myStyle = _elm_lang$html$Html_Attributes$style(
 	_elm_lang$core$Native_List.fromArray(
 		[
 			{ctor: '_Tuple2', _0: 'text-align', _1: 'left'},
-			{ctor: '_Tuple2', _0: 'height', _1: '200px'},
+			{ctor: '_Tuple2', _0: 'padding-bottom', _1: '30px'},
 			{ctor: '_Tuple2', _0: 'width', _1: '200px'},
 			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
 			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'}
@@ -238,35 +246,70 @@ var _user$project$Main$compare = F3(
 			_elm_lang$core$String$toUpper($char),
 			input) || _elm_lang$core$Native_Utils.eq(currentChar, $char)) ? $char : '_';
 	});
-var _user$project$Main$under = function (n) {
-	return '_';
+var _user$project$Main$error = function (model) {
+	return _elm_lang$core$Native_Utils.eq(model.input, '') ? 1 : (A2(
+		_elm_lang$core$List$member,
+		model.input,
+		A2(
+			_elm_lang$core$List$map,
+			_elm_lang$core$String$toUpper,
+			_elm_lang$core$Array$toList(model.current))) ? 2 : (A2(_elm_lang$core$List$member, model.input, model.misses) ? 3 : 0));
 };
+var _user$project$Main$checkVictory = function (model) {
+	var _p0 = model.status;
+	switch (_p0.ctor) {
+		case 'Win':
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'Congratulations!', score: model.score + 1});
+		case 'Loss':
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					message: A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Sorry, the word was: ',
+						_user$project$Main$readArray(model.answer))
+				});
+		default:
+			return model;
+	}
+};
+var _user$project$Main$length$ = 8;
 var _user$project$Main$answerString = 'Alphabet';
 var _user$project$Main$answer = _elm_lang$core$Array$fromList(
 	A2(_elm_lang$core$String$split, '', _user$project$Main$answerString));
-var _user$project$Main$length$ = _elm_lang$core$Array$length(_user$project$Main$answer);
-var _user$project$Main$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {input: a, chances: b, answer: c, current: d, oldCurrent: e, status: f, hangman: g};
-	});
-var _user$project$Main$Ongoing = {ctor: 'Ongoing'};
-var _user$project$Main$init = function () {
-	var current = A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_');
-	return {
-		ctor: '_Tuple2',
-		_0: A7(
-			_user$project$Main$Model,
-			'',
-			9,
-			_user$project$Main$answer,
-			current,
-			current,
-			_user$project$Main$Ongoing,
-			_elm_lang$core$Native_List.fromArray(
-				[_user$project$Main$stand, _user$project$Main$head, _user$project$Main$torso, _user$project$Main$leftArm, _user$project$Main$rightArm, _user$project$Main$leftLeg, _user$project$Main$rightLeg, _user$project$Main$leftEye, _user$project$Main$rightEye, _user$project$Main$blood])),
-		_1: _elm_lang$core$Platform_Cmd$none
+var _user$project$Main$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {input: a, chances: b, answer: c, current: d, oldCurrent: e, status: f, hangman: g, misses: h, message: i, score: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
 	};
+};
+var _user$project$Main$Ongoing = {ctor: 'Ongoing'};
+var _user$project$Main$initModel = function () {
+	var current = A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_');
+	return _user$project$Main$Model('')(9)(_user$project$Main$answer)(current)(current)(_user$project$Main$Ongoing)(
+		_elm_lang$core$Native_List.fromArray(
+			[_user$project$Main$stand, _user$project$Main$head, _user$project$Main$torso, _user$project$Main$leftArm, _user$project$Main$rightArm, _user$project$Main$leftLeg, _user$project$Main$rightLeg, _user$project$Main$leftEye, _user$project$Main$rightEye, _user$project$Main$blood]))(
+		_elm_lang$core$Native_List.fromArray(
+			[]))('')(0);
 }();
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$Loss = {ctor: 'Loss'};
 var _user$project$Main$Win = {ctor: 'Win'};
 var _user$project$Main$checkFunction = function (model) {
@@ -277,27 +320,65 @@ var _user$project$Main$checkFunction = function (model) {
 			_elm_lang$core$Array$toList(model.current),
 			_elm_lang$core$Array$toList(model.answer)));
 	var chances = _elm_lang$core$Native_Utils.eq(current, model.current) ? (model.chances - 1) : model.chances;
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			input: '',
-			chances: chances,
-			current: current,
-			oldCurrent: model.current,
-			status: _elm_lang$core$Native_Utils.eq(chances, 0) ? _user$project$Main$Loss : (_elm_lang$core$Native_Utils.eq(model.answer, current) ? _user$project$Main$Win : model.status)
-		});
+	var misses = _elm_lang$core$Native_Utils.eq(current, model.current) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		model.misses,
+		_elm_lang$core$Native_List.fromArray(
+			[model.input])) : model.misses;
+	var _p1 = _user$project$Main$error(model);
+	switch (_p1) {
+		case 3:
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'You\'ve already made that mistake!'});
+		case 2:
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'You\'ve already got that one right!'});
+		case 1:
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'You didn\'t type anything!'});
+		default:
+			return _user$project$Main$checkVictory(
+				_elm_lang$core$Native_Utils.update(
+					model,
+					{
+						input: '',
+						chances: chances,
+						current: current,
+						oldCurrent: model.current,
+						status: _elm_lang$core$Native_Utils.eq(chances, 0) ? _user$project$Main$Loss : (_elm_lang$core$Native_Utils.eq(model.answer, current) ? _user$project$Main$Win : model.status),
+						misses: misses,
+						message: ''
+					}));
+	}
 };
+var _user$project$Main$FetchFail = function (a) {
+	return {ctor: 'FetchFail', _0: a};
+};
+var _user$project$Main$FetchSucceed = function (a) {
+	return {ctor: 'FetchSucceed', _0: a};
+};
+var _user$project$Main$getRandomWord = function () {
+	var url = 'http://randomword.setgetgo.com/get.php?len=8';
+	return A3(
+		_elm_lang$core$Task$perform,
+		_user$project$Main$FetchFail,
+		_user$project$Main$FetchSucceed,
+		_evancz$elm_http$Http$getString(url));
+}();
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NewContent':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							input: _elm_lang$core$String$toUpper(_p0._0)
+							input: _elm_lang$core$String$toUpper(_p2._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -307,8 +388,29 @@ var _user$project$Main$update = F2(
 					_0: _user$project$Main$checkFunction(model),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'Reset':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						_user$project$Main$initModel,
+						{score: model.score}),
+					_1: _user$project$Main$getRandomWord
+				};
+			case 'FetchSucceed':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							answer: _elm_lang$core$Array$fromList(
+								A2(_elm_lang$core$String$split, '', _p2._0)),
+							current: A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_'),
+							oldCurrent: A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_')
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			default:
-				return _user$project$Main$init;
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 var _user$project$Main$Reset = {ctor: 'Reset'};
@@ -323,6 +425,18 @@ var _user$project$Main$view = function (model) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$scoreStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Score: ',
+							_elm_lang$core$Basics$toString(model.score)))
+					])),
 				A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -389,7 +503,27 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						_user$project$Main$viewArray(model.current))
+						_user$project$Main$readArray(model.current))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$myStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Misses: ',
+							A2(_elm_lang$core$String$join, ' ', model.misses)))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$myStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(model.message)
 					]))
 			]));
 };

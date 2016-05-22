@@ -8334,6 +8334,362 @@ var _elm_lang$svg$Svg_Attributes$additive = _elm_lang$virtual_dom$VirtualDom$att
 var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$attribute('accumulate');
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
+//import Dict, List, Maybe, Native.Scheduler //
+
+var _evancz$elm_http$Native_Http = function() {
+
+function send(settings, request)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		var req = new XMLHttpRequest();
+
+		// start
+		if (settings.onStart.ctor === 'Just')
+		{
+			req.addEventListener('loadStart', function() {
+				var task = settings.onStart._0;
+				_elm_lang$core$Native_Scheduler.rawSpawn(task);
+			});
+		}
+
+		// progress
+		if (settings.onProgress.ctor === 'Just')
+		{
+			req.addEventListener('progress', function(event) {
+				var progress = !event.lengthComputable
+					? _elm_lang$core$Maybe$Nothing
+					: _elm_lang$core$Maybe$Just({
+						loaded: event.loaded,
+						total: event.total
+					});
+				var task = settings.onProgress._0(progress);
+				_elm_lang$core$Native_Scheduler.rawSpawn(task);
+			});
+		}
+
+		// end
+		req.addEventListener('error', function() {
+			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'RawNetworkError' }));
+		});
+
+		req.addEventListener('timeout', function() {
+			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'RawTimeout' }));
+		});
+
+		req.addEventListener('load', function() {
+			return callback(_elm_lang$core$Native_Scheduler.succeed(toResponse(req)));
+		});
+
+		req.open(request.verb, request.url, true);
+
+		// set all the headers
+		function setHeader(pair) {
+			req.setRequestHeader(pair._0, pair._1);
+		}
+		A2(_elm_lang$core$List$map, setHeader, request.headers);
+
+		// set the timeout
+		req.timeout = settings.timeout;
+
+		// enable this withCredentials thing
+		req.withCredentials = settings.withCredentials;
+
+		// ask for a specific MIME type for the response
+		if (settings.desiredResponseType.ctor === 'Just')
+		{
+			req.overrideMimeType(settings.desiredResponseType._0);
+		}
+
+		// actuall send the request
+		if(request.body.ctor === "BodyFormData")
+		{
+			req.send(request.body.formData)
+		}
+		else
+		{
+			req.send(request.body._0);
+		}
+
+		return function() {
+			req.abort();
+		};
+	});
+}
+
+
+// deal with responses
+
+function toResponse(req)
+{
+	var tag = req.responseType === 'blob' ? 'Blob' : 'Text'
+	var response = tag === 'Blob' ? req.response : req.responseText;
+	return {
+		status: req.status,
+		statusText: req.statusText,
+		headers: parseHeaders(req.getAllResponseHeaders()),
+		url: req.responseURL,
+		value: { ctor: tag, _0: response }
+	};
+}
+
+
+function parseHeaders(rawHeaders)
+{
+	var headers = _elm_lang$core$Dict$empty;
+
+	if (!rawHeaders)
+	{
+		return headers;
+	}
+
+	var headerPairs = rawHeaders.split('\u000d\u000a');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf('\u003a\u0020');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3(_elm_lang$core$Dict$update, key, function(oldValue) {
+				if (oldValue.ctor === 'Just')
+				{
+					return _elm_lang$core$Maybe$Just(value + ', ' + oldValue._0);
+				}
+				return _elm_lang$core$Maybe$Just(value);
+			}, headers);
+		}
+	}
+
+	return headers;
+}
+
+
+function multipart(dataList)
+{
+	var formData = new FormData();
+
+	while (dataList.ctor !== '[]')
+	{
+		var data = dataList._0;
+		if (data.ctor === 'StringData')
+		{
+			formData.append(data._0, data._1);
+		}
+		else
+		{
+			var fileName = data._1.ctor === 'Nothing'
+				? undefined
+				: data._1._0;
+			formData.append(data._0, data._2, fileName);
+		}
+		dataList = dataList._1;
+	}
+
+	return { ctor: 'BodyFormData', formData: formData };
+}
+
+
+function uriEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function uriDecode(string)
+{
+	return decodeURIComponent(string);
+}
+
+return {
+	send: F2(send),
+	multipart: multipart,
+	uriEncode: uriEncode,
+	uriDecode: uriDecode
+};
+
+}();
+var _evancz$elm_http$Http$send = _evancz$elm_http$Native_Http.send;
+var _evancz$elm_http$Http$defaultSettings = {timeout: 0, onStart: _elm_lang$core$Maybe$Nothing, onProgress: _elm_lang$core$Maybe$Nothing, desiredResponseType: _elm_lang$core$Maybe$Nothing, withCredentials: false};
+var _evancz$elm_http$Http$multipart = _evancz$elm_http$Native_Http.multipart;
+var _evancz$elm_http$Http$uriDecode = _evancz$elm_http$Native_Http.uriDecode;
+var _evancz$elm_http$Http$uriEncode = _evancz$elm_http$Native_Http.uriEncode;
+var _evancz$elm_http$Http$queryEscape = function (string) {
+	return A2(
+		_elm_lang$core$String$join,
+		'+',
+		A2(
+			_elm_lang$core$String$split,
+			'%20',
+			_evancz$elm_http$Http$uriEncode(string)));
+};
+var _evancz$elm_http$Http$queryPair = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_evancz$elm_http$Http$queryEscape(_p1._0),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'=',
+			_evancz$elm_http$Http$queryEscape(_p1._1)));
+};
+var _evancz$elm_http$Http$url = F2(
+	function (baseUrl, args) {
+		var _p2 = args;
+		if (_p2.ctor === '[]') {
+			return baseUrl;
+		} else {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				baseUrl,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'?',
+					A2(
+						_elm_lang$core$String$join,
+						'&',
+						A2(_elm_lang$core$List$map, _evancz$elm_http$Http$queryPair, args))));
+		}
+	});
+var _evancz$elm_http$Http$Request = F4(
+	function (a, b, c, d) {
+		return {verb: a, headers: b, url: c, body: d};
+	});
+var _evancz$elm_http$Http$Settings = F5(
+	function (a, b, c, d, e) {
+		return {timeout: a, onStart: b, onProgress: c, desiredResponseType: d, withCredentials: e};
+	});
+var _evancz$elm_http$Http$Response = F5(
+	function (a, b, c, d, e) {
+		return {status: a, statusText: b, headers: c, url: d, value: e};
+	});
+var _evancz$elm_http$Http$TODO_implement_blob_in_another_library = {ctor: 'TODO_implement_blob_in_another_library'};
+var _evancz$elm_http$Http$TODO_implement_file_in_another_library = {ctor: 'TODO_implement_file_in_another_library'};
+var _evancz$elm_http$Http$BodyBlob = function (a) {
+	return {ctor: 'BodyBlob', _0: a};
+};
+var _evancz$elm_http$Http$BodyFormData = {ctor: 'BodyFormData'};
+var _evancz$elm_http$Http$ArrayBuffer = {ctor: 'ArrayBuffer'};
+var _evancz$elm_http$Http$BodyString = function (a) {
+	return {ctor: 'BodyString', _0: a};
+};
+var _evancz$elm_http$Http$string = _evancz$elm_http$Http$BodyString;
+var _evancz$elm_http$Http$Empty = {ctor: 'Empty'};
+var _evancz$elm_http$Http$empty = _evancz$elm_http$Http$Empty;
+var _evancz$elm_http$Http$FileData = F3(
+	function (a, b, c) {
+		return {ctor: 'FileData', _0: a, _1: b, _2: c};
+	});
+var _evancz$elm_http$Http$BlobData = F3(
+	function (a, b, c) {
+		return {ctor: 'BlobData', _0: a, _1: b, _2: c};
+	});
+var _evancz$elm_http$Http$blobData = _evancz$elm_http$Http$BlobData;
+var _evancz$elm_http$Http$StringData = F2(
+	function (a, b) {
+		return {ctor: 'StringData', _0: a, _1: b};
+	});
+var _evancz$elm_http$Http$stringData = _evancz$elm_http$Http$StringData;
+var _evancz$elm_http$Http$Blob = function (a) {
+	return {ctor: 'Blob', _0: a};
+};
+var _evancz$elm_http$Http$Text = function (a) {
+	return {ctor: 'Text', _0: a};
+};
+var _evancz$elm_http$Http$RawNetworkError = {ctor: 'RawNetworkError'};
+var _evancz$elm_http$Http$RawTimeout = {ctor: 'RawTimeout'};
+var _evancz$elm_http$Http$BadResponse = F2(
+	function (a, b) {
+		return {ctor: 'BadResponse', _0: a, _1: b};
+	});
+var _evancz$elm_http$Http$UnexpectedPayload = function (a) {
+	return {ctor: 'UnexpectedPayload', _0: a};
+};
+var _evancz$elm_http$Http$handleResponse = F2(
+	function (handle, response) {
+		if ((_elm_lang$core$Native_Utils.cmp(200, response.status) < 1) && (_elm_lang$core$Native_Utils.cmp(response.status, 300) < 0)) {
+			var _p3 = response.value;
+			if (_p3.ctor === 'Text') {
+				return handle(_p3._0);
+			} else {
+				return _elm_lang$core$Task$fail(
+					_evancz$elm_http$Http$UnexpectedPayload('Response body is a blob, expecting a string.'));
+			}
+		} else {
+			return _elm_lang$core$Task$fail(
+				A2(_evancz$elm_http$Http$BadResponse, response.status, response.statusText));
+		}
+	});
+var _evancz$elm_http$Http$NetworkError = {ctor: 'NetworkError'};
+var _evancz$elm_http$Http$Timeout = {ctor: 'Timeout'};
+var _evancz$elm_http$Http$promoteError = function (rawError) {
+	var _p4 = rawError;
+	if (_p4.ctor === 'RawTimeout') {
+		return _evancz$elm_http$Http$Timeout;
+	} else {
+		return _evancz$elm_http$Http$NetworkError;
+	}
+};
+var _evancz$elm_http$Http$getString = function (url) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[]),
+		url: url,
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_elm_lang$core$Task$andThen,
+		A2(
+			_elm_lang$core$Task$mapError,
+			_evancz$elm_http$Http$promoteError,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request)),
+		_evancz$elm_http$Http$handleResponse(_elm_lang$core$Task$succeed));
+};
+var _evancz$elm_http$Http$fromJson = F2(
+	function (decoder, response) {
+		var decode = function (str) {
+			var _p5 = A2(_elm_lang$core$Json_Decode$decodeString, decoder, str);
+			if (_p5.ctor === 'Ok') {
+				return _elm_lang$core$Task$succeed(_p5._0);
+			} else {
+				return _elm_lang$core$Task$fail(
+					_evancz$elm_http$Http$UnexpectedPayload(_p5._0));
+			}
+		};
+		return A2(
+			_elm_lang$core$Task$andThen,
+			A2(_elm_lang$core$Task$mapError, _evancz$elm_http$Http$promoteError, response),
+			_evancz$elm_http$Http$handleResponse(decode));
+	});
+var _evancz$elm_http$Http$get = F2(
+	function (decoder, url) {
+		var request = {
+			verb: 'GET',
+			headers: _elm_lang$core$Native_List.fromArray(
+				[]),
+			url: url,
+			body: _evancz$elm_http$Http$empty
+		};
+		return A2(
+			_evancz$elm_http$Http$fromJson,
+			decoder,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+	});
+var _evancz$elm_http$Http$post = F3(
+	function (decoder, url, body) {
+		var request = {
+			verb: 'POST',
+			headers: _elm_lang$core$Native_List.fromArray(
+				[]),
+			url: url,
+			body: body
+		};
+		return A2(
+			_evancz$elm_http$Http$fromJson,
+			decoder,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+	});
 var _user$project$Main$loseScreen = _elm_lang$html$Html$text('You Lost!');
 var _user$project$Main$winScreen = _elm_lang$html$Html$text('You Win!');
 var _user$project$Main$blood = A2(
@@ -8528,7 +8884,7 @@ var _user$project$Main$hangmanScreen = function (model) {
 			]),
 		A2(_elm_lang$core$List$take, 10 - model.chances, model.hangman));
 };
-var _user$project$Main$viewArray = function (array) {
+var _user$project$Main$readArray = function (array) {
 	return A2(
 		_elm_lang$core$String$join,
 		' ',
@@ -8554,13 +8910,21 @@ var _user$project$Main$headStyle = _elm_lang$html$Html_Attributes$style(
 			{ctor: '_Tuple2', _0: 'height', _1: '50px'},
 			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
 			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'},
-			{ctor: '_Tuple2', _0: 'padding-top', _1: '20px'}
+			{ctor: '_Tuple2', _0: 'padding-top', _1: '5px'}
+		]));
+var _user$project$Main$scoreStyle = _elm_lang$html$Html_Attributes$style(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: 'text-align', _1: 'left'},
+			{ctor: '_Tuple2', _0: 'padding-top', _1: '5px'},
+			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
+			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'}
 		]));
 var _user$project$Main$myStyle = _elm_lang$html$Html_Attributes$style(
 	_elm_lang$core$Native_List.fromArray(
 		[
 			{ctor: '_Tuple2', _0: 'text-align', _1: 'left'},
-			{ctor: '_Tuple2', _0: 'height', _1: '200px'},
+			{ctor: '_Tuple2', _0: 'padding-bottom', _1: '30px'},
 			{ctor: '_Tuple2', _0: 'width', _1: '200px'},
 			{ctor: '_Tuple2', _0: 'font-family', _1: 'Courier New'},
 			{ctor: '_Tuple2', _0: 'padding-left', _1: '20px'}
@@ -8574,35 +8938,70 @@ var _user$project$Main$compare = F3(
 			_elm_lang$core$String$toUpper($char),
 			input) || _elm_lang$core$Native_Utils.eq(currentChar, $char)) ? $char : '_';
 	});
-var _user$project$Main$under = function (n) {
-	return '_';
+var _user$project$Main$error = function (model) {
+	return _elm_lang$core$Native_Utils.eq(model.input, '') ? 1 : (A2(
+		_elm_lang$core$List$member,
+		model.input,
+		A2(
+			_elm_lang$core$List$map,
+			_elm_lang$core$String$toUpper,
+			_elm_lang$core$Array$toList(model.current))) ? 2 : (A2(_elm_lang$core$List$member, model.input, model.misses) ? 3 : 0));
 };
+var _user$project$Main$checkVictory = function (model) {
+	var _p0 = model.status;
+	switch (_p0.ctor) {
+		case 'Win':
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'Congratulations!', score: model.score + 1});
+		case 'Loss':
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					message: A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Sorry, the word was: ',
+						_user$project$Main$readArray(model.answer))
+				});
+		default:
+			return model;
+	}
+};
+var _user$project$Main$length$ = 8;
 var _user$project$Main$answerString = 'Alphabet';
 var _user$project$Main$answer = _elm_lang$core$Array$fromList(
 	A2(_elm_lang$core$String$split, '', _user$project$Main$answerString));
-var _user$project$Main$length$ = _elm_lang$core$Array$length(_user$project$Main$answer);
-var _user$project$Main$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {input: a, chances: b, answer: c, current: d, oldCurrent: e, status: f, hangman: g};
-	});
-var _user$project$Main$Ongoing = {ctor: 'Ongoing'};
-var _user$project$Main$init = function () {
-	var current = A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_');
-	return {
-		ctor: '_Tuple2',
-		_0: A7(
-			_user$project$Main$Model,
-			'',
-			9,
-			_user$project$Main$answer,
-			current,
-			current,
-			_user$project$Main$Ongoing,
-			_elm_lang$core$Native_List.fromArray(
-				[_user$project$Main$stand, _user$project$Main$head, _user$project$Main$torso, _user$project$Main$leftArm, _user$project$Main$rightArm, _user$project$Main$leftLeg, _user$project$Main$rightLeg, _user$project$Main$leftEye, _user$project$Main$rightEye, _user$project$Main$blood])),
-		_1: _elm_lang$core$Platform_Cmd$none
+var _user$project$Main$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {input: a, chances: b, answer: c, current: d, oldCurrent: e, status: f, hangman: g, misses: h, message: i, score: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
 	};
+};
+var _user$project$Main$Ongoing = {ctor: 'Ongoing'};
+var _user$project$Main$initModel = function () {
+	var current = A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_');
+	return _user$project$Main$Model('')(9)(_user$project$Main$answer)(current)(current)(_user$project$Main$Ongoing)(
+		_elm_lang$core$Native_List.fromArray(
+			[_user$project$Main$stand, _user$project$Main$head, _user$project$Main$torso, _user$project$Main$leftArm, _user$project$Main$rightArm, _user$project$Main$leftLeg, _user$project$Main$rightLeg, _user$project$Main$leftEye, _user$project$Main$rightEye, _user$project$Main$blood]))(
+		_elm_lang$core$Native_List.fromArray(
+			[]))('')(0);
 }();
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$Loss = {ctor: 'Loss'};
 var _user$project$Main$Win = {ctor: 'Win'};
 var _user$project$Main$checkFunction = function (model) {
@@ -8613,27 +9012,65 @@ var _user$project$Main$checkFunction = function (model) {
 			_elm_lang$core$Array$toList(model.current),
 			_elm_lang$core$Array$toList(model.answer)));
 	var chances = _elm_lang$core$Native_Utils.eq(current, model.current) ? (model.chances - 1) : model.chances;
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			input: '',
-			chances: chances,
-			current: current,
-			oldCurrent: model.current,
-			status: _elm_lang$core$Native_Utils.eq(chances, 0) ? _user$project$Main$Loss : (_elm_lang$core$Native_Utils.eq(model.answer, current) ? _user$project$Main$Win : model.status)
-		});
+	var misses = _elm_lang$core$Native_Utils.eq(current, model.current) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		model.misses,
+		_elm_lang$core$Native_List.fromArray(
+			[model.input])) : model.misses;
+	var _p1 = _user$project$Main$error(model);
+	switch (_p1) {
+		case 3:
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'You\'ve already made that mistake!'});
+		case 2:
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'You\'ve already got that one right!'});
+		case 1:
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{message: 'You didn\'t type anything!'});
+		default:
+			return _user$project$Main$checkVictory(
+				_elm_lang$core$Native_Utils.update(
+					model,
+					{
+						input: '',
+						chances: chances,
+						current: current,
+						oldCurrent: model.current,
+						status: _elm_lang$core$Native_Utils.eq(chances, 0) ? _user$project$Main$Loss : (_elm_lang$core$Native_Utils.eq(model.answer, current) ? _user$project$Main$Win : model.status),
+						misses: misses,
+						message: ''
+					}));
+	}
 };
+var _user$project$Main$FetchFail = function (a) {
+	return {ctor: 'FetchFail', _0: a};
+};
+var _user$project$Main$FetchSucceed = function (a) {
+	return {ctor: 'FetchSucceed', _0: a};
+};
+var _user$project$Main$getRandomWord = function () {
+	var url = 'http://randomword.setgetgo.com/get.php?len=8';
+	return A3(
+		_elm_lang$core$Task$perform,
+		_user$project$Main$FetchFail,
+		_user$project$Main$FetchSucceed,
+		_evancz$elm_http$Http$getString(url));
+}();
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NewContent':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							input: _elm_lang$core$String$toUpper(_p0._0)
+							input: _elm_lang$core$String$toUpper(_p2._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -8643,8 +9080,29 @@ var _user$project$Main$update = F2(
 					_0: _user$project$Main$checkFunction(model),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'Reset':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						_user$project$Main$initModel,
+						{score: model.score}),
+					_1: _user$project$Main$getRandomWord
+				};
+			case 'FetchSucceed':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							answer: _elm_lang$core$Array$fromList(
+								A2(_elm_lang$core$String$split, '', _p2._0)),
+							current: A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_'),
+							oldCurrent: A2(_elm_lang$core$Array$repeat, _user$project$Main$length$, '_')
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			default:
-				return _user$project$Main$init;
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 var _user$project$Main$Reset = {ctor: 'Reset'};
@@ -8659,6 +9117,18 @@ var _user$project$Main$view = function (model) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$scoreStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Score: ',
+							_elm_lang$core$Basics$toString(model.score)))
+					])),
 				A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -8725,7 +9195,27 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						_user$project$Main$viewArray(model.current))
+						_user$project$Main$readArray(model.current))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$myStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Misses: ',
+							A2(_elm_lang$core$String$join, ' ', model.misses)))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Main$myStyle]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(model.message)
 					]))
 			]));
 };
